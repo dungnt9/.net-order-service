@@ -1,0 +1,13 @@
+USE OrderServiceDb;
+
+INSERT INTO Orders (CustomerName, CustomerEmail, ProductId, ProductName, ProductPrice, Quantity, TotalAmount, Status, CreatedAt) VALUES
+                                                                                                                                     ('Nguyễn Văn An', 'an.nguyen@email.com', 1, 'iPhone 15 Pro Max', 1399.99, 1, 1399.99, 'Completed', DATE_SUB(NOW(), INTERVAL 1 DAY)),
+                                                                                                                                     ('Trần Thị Bình', 'binh.tran@email.com', 4, 'Galaxy S24 Ultra', 1299.99, 1, 1299.99, 'Shipped', DATE_SUB(NOW(), INTERVAL 2 DAY)),
+                                                                                                                                     ('Lê Minh Cường', 'cuong.le@email.com', 3, 'iPhone 15', 899.99, 2, 1799.98, 'Processing', DATE_SUB(NOW(), INTERVAL 3 DAY)),
+                                                                                                                                     ('Phạm Thu Dung', 'dung.pham@email.com', 6, 'Pixel 8 Pro', 999.99, 1, 999.99, 'Completed', DATE_SUB(NOW(), INTERVAL 4 DAY)),
+                                                                                                                                     ('Hoàng Văn Em', 'em.hoang@email.com', 8, 'OnePlus 12', 799.99, 1, 799.99, 'Shipped', DATE_SUB(NOW(), INTERVAL 5 DAY)),
+                                                                                                                                     ('Võ Thị Phương', 'phuong.vo@email.com', 5, 'Galaxy S24', 799.99, 2, 1599.98, 'Completed', DATE_SUB(NOW(), INTERVAL 6 DAY)),
+                                                                                                                                     ('Đặng Minh Giang', 'giang.dang@email.com', 7, 'Pixel 8', 699.99, 1, 699.99, 'Completed', DATE_SUB(NOW(), INTERVAL 8 DAY)),
+                                                                                                                                     ('Bùi Văn Hải', 'hai.bui@email.com', 9, 'Xiaomi 14 Pro', 649.99, 1, 649.99, 'Completed', DATE_SUB(NOW(), INTERVAL 9 DAY)),
+                                                                                                                                     ('Huỳnh Văn Sơn', 'son.huynh@email.com', 2, 'iPhone 15 Pro', 1199.99, 1, 1199.99, 'Pending', DATE_SUB(NOW(), INTERVAL 1 HOUR)),
+                                                                                                                                     ('Tô Thị Tâm', 'tam.to@email.com', 10, 'Nothing Phone 2', 699.99, 1, 699.99, 'Pending', DATE_SUB(NOW(), INTERVAL 2 HOUR));

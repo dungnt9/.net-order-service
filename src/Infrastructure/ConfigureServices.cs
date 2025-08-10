@@ -28,6 +28,8 @@ public static class ConfigureServices
             client.BaseAddress = new Uri(configuration["Services:ProductService:BaseUrl"] ?? "http://productservice:8080");
             client.Timeout = TimeSpan.FromSeconds(30);
         });
+        
+        services.AddSingleton<INotificationService, RabbitMQNotificationService>();
 
         return services;
     }

@@ -8,11 +8,16 @@ public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, CreateOrde
 {
     private readonly IOrderRepository _orderRepository;
     private readonly IProductServiceClient _productServiceClient;
+    private readonly INotificationService _notificationService; // Thêm dòng này
 
-    public CreateOrderHandler(IOrderRepository orderRepository, IProductServiceClient productServiceClient)
+    public CreateOrderHandler(
+        IOrderRepository orderRepository, 
+        IProductServiceClient productServiceClient,
+        INotificationService notificationService)
     {
         _orderRepository = orderRepository;
         _productServiceClient = productServiceClient;
+        _notificationService = notificationService;
     }
 
     public async Task<CreateOrderResponse> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
@@ -45,6 +50,20 @@ public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, CreateOrde
         };
 
         var createdOrder = await _orderRepository.CreateAsync(order);
+        
+        await _notificationService.SendNotificationAsync(new NotificationEvent
+        {
+            EventName = "ORDER_CREATED",
+            Message = $"New order #{createdOrder.Id} has been created",
+            Data = new Dictionary<string, object>
+            {
+                { "orderId", createdOrder.Id },
+                { "customerName", createdOrder.CustomerName },
+                { "productName", createdOrder.ProductName },
+                { "totalAmount", createdOrder.TotalAmount },
+                { "createdAt", createdOrder.CreatedAt }
+            }
+        });
 
         return new CreateOrderResponse(
             createdOrder.Id,

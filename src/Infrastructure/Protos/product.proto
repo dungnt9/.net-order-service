@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+option csharp_namespace = "ProductService.Grpc";
+
+package product;
+
+// Product gRPC Service
+service ProductGrpc {
+  // Get product by ID
+  rpc GetProduct (GetProductRequest) returns (ProductResponse);
+  
+  // Get multiple products by IDs
+  rpc GetProducts (GetProductsRequest) returns (GetProductsResponse);
+}
+
+// Request message for getting a single product
+message GetProductRequest {
+  int32 id = 1;
+}
+
+// Request message for getting multiple products
+message GetProductsRequest {
+  repeated int32 ids = 1;
+}
+
+// Product information
+message ProductResponse {
+  int32 id = 1;
+  string name = 2;
+  string brand = 3;
+  string price = 4;  // decimal as string for precision
+  string description = 5;
+  int32 stock = 6;
+  bool is_active = 7;
+  string created_at = 8;
+  bool found = 9;  // flag to indicate if product was found
+}
+
+// Response for multiple products
+message GetProductsResponse {
+  repeated ProductResponse products = 1;
+}

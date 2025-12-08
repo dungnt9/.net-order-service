@@ -22,12 +22,15 @@ public static class ConfigureServices
         // Repositories
         services.AddScoped<IOrderRepository, OrderRepository>();
 
-        // HTTP Client for ProductService
+        // HTTP Client for ProductService (giữ nguyên code cũ)
         services.AddHttpClient<IProductServiceClient, ProductServiceClient>(client =>
         {
             client.BaseAddress = new Uri(configuration["Services:ProductService:BaseUrl"] ?? "http://productservice:8080");
             client.Timeout = TimeSpan.FromSeconds(30);
         });
+        
+        // gRPC Client for ProductService
+        services.AddSingleton<IProductGrpcClient, ProductGrpcClient>();
         
         services.AddSingleton<INotificationService, RabbitMQNotificationService>();
 

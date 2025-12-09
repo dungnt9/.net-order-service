@@ -8,7 +8,7 @@ public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, CreateOrde
 {
     private readonly IOrderRepository _orderRepository;
     private readonly IProductServiceClient _productServiceClient;
-    private readonly INotificationService _notificationService; // Thêm dòng này
+    private readonly INotificationService _notificationService;
 
     public CreateOrderHandler(
         IOrderRepository orderRepository, 
@@ -30,9 +30,11 @@ public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, CreateOrde
             throw new Exception($"Product with ID {request.ProductId} not found");
         }
 
-        if (product.Stock < request.Quantity)
+        // Check stock via gRPC
+        var stockCheck = await _productServiceClient.CheckStockAsync(request.ProductId, request.Quantity);
+        if (!stockCheck.IsAvailable)
         {
-            throw new Exception($"Insufficient stock. Available: {product.Stock}, Requested: {request.Quantity}");
+            throw new Exception(stockCheck.Message);
         }
 
         var totalAmount = product.Price * request.Quantity;
@@ -50,6 +52,15 @@ public class CreateOrderHandler : IRequestHandler<CreateOrderCommand, CreateOrde
         };
 
         var createdOrder = await _orderRepository.CreateAsync(order);
+
+        // Update stock via gRPC (decrease by quantity)
+        var stockUpdate = await _productServiceClient.UpdateStockAsync(request.ProductId, -request.Quantity);
+        if (!stockUpdate.Success)
+        {
+            // Rollback order if stock update fails
+            await _orderRepository.DeleteAsync(createdOrder.Id);
+            throw new Exception($"Failed to update stock: {stockUpdate.Message}");
+        }
         
         await _notificationService.SendNotificationAsync(new NotificationEvent
         {

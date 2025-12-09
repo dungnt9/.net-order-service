@@ -40,4 +40,19 @@ public class OrderRepository : IOrderRepository
         await _context.SaveChangesAsync();
         return order;
     }
+
+    public async Task DeleteAsync(int id)
+    {
+        var order = await _context.Orders.FindAsync(id);
+        if (order != null)
+        {
+            _context.Orders.Remove(order);
+            await _context.SaveChangesAsync();
+        }
+    }
+
+    public async Task<bool> ExistsAsync(int id)
+    {
+        return await _context.Orders.AnyAsync(o => o.Id == id);
+    }
 }

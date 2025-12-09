@@ -92,6 +92,8 @@ public class ProductGrpcClient : IProductGrpcClient, IDisposable
             response.Description,
             response.Stock,
             response.IsActive,
+            response.CategoryId,
+            response.CategoryName,
             DateTime.TryParse(response.CreatedAt, out var createdAt) ? createdAt : DateTime.MinValue
         );
     }

@@ -5,6 +5,7 @@ using Application.Common.Interfaces;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Repositories;
 using Infrastructure.Services;
+using ProductService.Grpc;
 
 namespace Infrastructure;
 
@@ -22,15 +23,25 @@ public static class ConfigureServices
         // Repositories
         services.AddScoped<IOrderRepository, OrderRepository>();
 
-        // HTTP Client for ProductService (giữ nguyên code cũ)
-        services.AddHttpClient<IProductServiceClient, ProductServiceClient>(client =>
+        // HTTP Client for ProductService (fallback)
+        services.AddHttpClient<ProductServiceClient>(client =>
         {
             client.BaseAddress = new Uri(configuration["Services:ProductService:BaseUrl"] ?? "http://productservice:8080");
             client.Timeout = TimeSpan.FromSeconds(30);
         });
         
         // gRPC Client for ProductService
-        services.AddSingleton<IProductGrpcClient, ProductGrpcClient>();
+        var grpcAddress = configuration["Services:ProductService:GrpcUrl"] ?? "http://productservice:8081";
+        services.AddGrpcClient<ProductGrpc.ProductGrpcClient>(options =>
+        {
+            options.Address = new Uri(grpcAddress);
+        });
+        
+        // Register ProductServiceClient with gRPC and HTTP support
+        services.AddScoped<IProductServiceClient, ProductServiceClient>();
+        
+        // Register ProductGrpcClient
+        services.AddScoped<IProductGrpcClient, ProductGrpcClient>();
         
         services.AddSingleton<INotificationService, RabbitMQNotificationService>();
 

@@ -11,6 +11,12 @@ service ProductGrpc {
   
   // Get multiple products by IDs
   rpc GetProducts (GetProductsRequest) returns (GetProductsResponse);
+  
+  // Check if product has sufficient stock
+  rpc CheckStock (CheckStockRequest) returns (CheckStockResponse);
+  
+  // Update product stock (decrease when order created, increase when order cancelled)
+  rpc UpdateStock (UpdateStockRequest) returns (UpdateStockResponse);
 }
 
 // Request message for getting a single product
@@ -34,9 +40,37 @@ message ProductResponse {
   bool is_active = 7;
   string created_at = 8;
   bool found = 9;  // flag to indicate if product was found
+  int32 category_id = 10;
+  string category_name = 11;
 }
 
 // Response for multiple products
 message GetProductsResponse {
   repeated ProductResponse products = 1;
+}
+
+// Check stock request
+message CheckStockRequest {
+  int32 product_id = 1;
+  int32 quantity = 2;
+}
+
+// Check stock response
+message CheckStockResponse {
+  bool is_available = 1;
+  int32 current_stock = 2;
+  string message = 3;
+}
+
+// Update stock request (negative quantity to decrease, positive to increase)
+message UpdateStockRequest {
+  int32 product_id = 1;
+  int32 quantity_change = 2;  // negative for decrease, positive for increase
+}
+
+// Update stock response
+message UpdateStockResponse {
+  bool success = 1;
+  int32 new_stock = 2;
+  string message = 3;
 }
